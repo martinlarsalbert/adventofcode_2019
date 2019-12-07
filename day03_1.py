@@ -34,6 +34,9 @@ class Line():
     def verify(self):
         pass
 
+    def plot(self,ax,**kwargs):
+        ax.plot(self.xs,self.ys,**kwargs)
+
 class HorizontalLine(Line):
 
     def verify(self):
