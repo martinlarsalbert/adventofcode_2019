@@ -3,7 +3,7 @@ import numpy as np
 def test_calculate_fuel_requirement():
 
     assert calculate_fuel_requirement(mass=1969) == 966
-
+    assert calculate_fuel_requirement(mass=100756) == 50346
 
 
 
@@ -14,8 +14,15 @@ def calculate_fuel_requirement(mass:int)->int:
     :param mass: Mass of module
     :return: required fuel for one module
     """
-    
-    _calculate_fuel_requirement()
+
+    required_fuel = 0
+    part_fuel = _calculate_fuel_requirement(mass=mass)
+
+    while(part_fuel>0):
+        part_mass = part_fuel
+        required_fuel += part_fuel
+        part_fuel = _calculate_fuel_requirement(mass=part_mass)
+
 
     return required_fuel
 
