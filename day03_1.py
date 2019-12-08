@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 def get_direction(move):
     return move[0]
@@ -60,8 +61,16 @@ class HorizontalLine(Line):
         if isinstance(line,HorizontalLine):
             return False  # Horizontal line cannot cross another horizontal line
 
-        does_cross = ((self.xs[1] >= line.xs[0]) and (self.xs[0] <= line.xs[0]) and
-                      (self.ys[0] >= line.ys[0]) and (self.ys[0] <= line.ys[1])
+        x_min = np.min(self.xs)
+        x_max = np.max(self.xs)
+        y_min = np.min(line.ys)
+        y_max = np.max(line.ys)
+
+        y = self.ys[0]
+        x = line.xs[0]
+
+        does_cross = ((x_max >= x) and (x_min <= x) and
+                      (y >= y_min) and (y <= y_max)
                      )
         return does_cross
 
@@ -95,8 +104,16 @@ class VerticalLine(Line):
         if isinstance(line,VerticalLine):
             return False  # VerticalLine line cannot cross another VerticalLine
 
-        does_cross = ((line.xs[1] >= self.xs[0]) and (line.xs[0] <= self.xs[0]) and
-                      (line.ys[0] >= self.ys[0]) and (line.ys[0] <= self.ys[1])
+        x_min = np.min(line.xs)
+        x_max = np.max(line.xs)
+        y_min = np.min(self.ys)
+        y_max = np.max(self.ys)
+
+        y = line.ys[0]
+        x = self.xs[0]
+
+        does_cross = ((x_max >= x) and (x_min <= x) and
+                      (y >= y_min) and (y <= y_max)
                      )
         return does_cross
 
@@ -151,7 +168,7 @@ def get_intersections(lines1,lines2):
             if line1.crosses(line2):
                 x,y = line1.get_crossing_point(line2)
 
-                if (x!=0) and (y!=0):
+                if not((x==0) and (y==0)):
                     xs.append(x)
                     ys.append(y)
 
@@ -176,8 +193,21 @@ def run(moves1_str:str, moves2_str:str):
             if distance<smallest_distance:
                 smallest_distance=distance
 
-        return smallest_distance
+    return smallest_distance
 
+
+if __name__ == '__main__':
+
+    with open('day03_input.txt') as file:
+        lines = file.readlines()
+
+    moves1_str = lines[0].replace('\n', '')
+    moves2_str = lines[1].replace('\n', '')
+
+    manhattan_distance = run(moves1_str=moves1_str,moves2_str=moves2_str)
+    print('Line1:%s' % moves1_str)
+    print('Line2:%s' % moves2_str)
+    print('Manhattan distance:%i' % manhattan_distance)
 
 
 ### Tests #################################
@@ -239,6 +269,14 @@ def test_crosses_horizontal_vertical():
     line2 = VerticalLine(2,1,2,3)
     assert line1.crosses(line2)
 
+    line1 = HorizontalLine(2,2,1,2)
+    line2 = VerticalLine(2,1,2,3)
+    assert line1.crosses(line2)
+
+    line1 = HorizontalLine(1,2,3,2)
+    line2 = VerticalLine(2,-1,2,3)
+    assert line1.crosses(line2)
+
     line1 = HorizontalLine(1, 2, 3, 2)
     line2 = VerticalLine(3, 1, 3, 3)
     assert line1.crosses(line2)
@@ -255,6 +293,10 @@ def test_crosses_vertical_horizontal():
 
     line2 = HorizontalLine(1,2,3,2)
     line1 = VerticalLine(2,1,2,3)
+    assert line1.crosses(line2)
+
+    line2 = HorizontalLine(1,2,3,2)
+    line1 = VerticalLine(2,3,2,1)
     assert line1.crosses(line2)
 
     line1 = HorizontalLine(1, 2, 3, 2)
@@ -305,6 +347,10 @@ def test_run():
 
     assert run('R75,D30,R83,U83,L12,D49,R71,U7,L72',
         'U62,R66,U55,R34,D71,R55,D58,R83') == 159
+
+    assert run('R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51',
+        'U98,R91,D20,R16,D67,R40,U7,R15,U6,R7') == 135
+
 
 
 
