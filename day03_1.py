@@ -38,6 +38,10 @@ class Line():
     def plot(self,ax,**kwargs):
         ax.plot(self.xs,self.ys,**kwargs)
 
+    @property
+    def length(self):
+        return int(np.abs(np.diff(self.xs)) + np.abs(np.diff(self.ys)))
+
 class HorizontalLine(Line):
 
     def verify(self):
@@ -79,6 +83,8 @@ class HorizontalLine(Line):
         y = self.ys[0]
         return x,y
 
+    def get_crossing_length(self, line:Line):
+        return np.abs(line.xs[0] -self.xs[0])
 
 
 class VerticalLine(Line):
@@ -121,6 +127,9 @@ class VerticalLine(Line):
         x = self.xs[0]
         y = line.ys[0]
         return x,y
+
+    def get_crossing_length(self, line:Line):
+        return np.abs(line.ys[0] -self.ys[0])
 
 
 def record_moves(moves:list):
